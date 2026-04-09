@@ -5,10 +5,10 @@
  */
 
 // MySQL Database Configuration
-define('DB_HOST', 'localhost');
+define('DB_HOST', 'mysql-jc9.railway.internal');
 define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'dopaper');
+define('DB_PASS', 'HpUQhmarfnqPNOsPlrEVAzerIvJLmaGb');
+define('DB_NAME', 'railway');
 
 /**
  * Create database connection using PDO (MySQL)
