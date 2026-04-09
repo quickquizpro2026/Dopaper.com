@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - DoPaper.com</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a5f2a 0%, #2e8b57 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .auth-container {
+            max-width: 450px;
+            width: 100%;
+        }
+        
+        .auth-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .auth-header {
+            background: linear-gradient(135deg, #1a5f2a 0%, #2e8b57 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .auth-header h2 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .auth-header h2 span {
+            color: #ffd700;
+        }
+        
+        .auth-header p {
+            margin: 10px 0 0;
+            opacity: 0.9;
+        }
+        
+        .auth-body {
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .form-control {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 12px 15px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: #2e8b57;
+            box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.1);
+        }
+        
+        .btn-auth {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #1a5f2a 0%, #2e8b57 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(46, 139, 87, 0.4);
+        }
+        
+        .toggle-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+        
+        .toggle-link a {
+            color: #1a5f2a;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .toggle-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .alert {
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-danger {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+        }
+        
+        .alert-success {
+            background: #efe;
+            border: 1px solid #cfc;
+            color: #3c3;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .user-info {
+            text-align: center;
+            padding: 20px;
+            background: #f8fff9;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .user-info h4 {
+            margin: 0;
+            color: #1a5f2a;
+        }
+        
+        .user-info p {
+            margin: 5px 0 0;
+            color: #666;
+        }
+        
+        .btn-home {
+            background: white;
+            color: #1a5f2a;
+            border: 2px solid #1a5f2a;
+        }
+        
+        .btn-home:hover {
+            background: #1a5f2a;
+            color: white;
+        }
+        
+        .btn-logout {
+            background: #dc3545;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h2>Do<span>Paper</span>.com</h2>
+                <p id="header-subtitle">Login to your account</p>
+            </div>
+            <div class="auth-body">
+                <!-- Alert for messages -->
+                <div id="alert-message" class="alert hidden"></div>
+                
+                <!-- Logged in state -->
+                <div id="logged-in-view" class="hidden">
+                    <div class="user-info">
+                        <h4>Welcome, <span id="user-name">User</span>!</h4>
+                        <p>You are already logged in</p>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <a href="exam_paper.html" class="btn btn-primary btn-auth">Go to Create Paper</a>
+                        <a href="dashboard.html" class="btn btn-auth btn-home">Go to Dashboard</a>
+                        <button id="logout-btn" class="btn btn-auth btn-logout">Logout</button>
+                    </div>
+                </div>
+                
+                <!-- Login Form -->
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">Email Address</label>
+                        <input type="email" class="form-control" id="login-email" name="email" required placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" class="form-control" id="login-password" name="password" required placeholder="Enter your password">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-auth">Login</button>
+                </form>
+                
+                <!-- Register Form -->
+                <form id="register-form" class="hidden">
+                    <div class="form-group">
+                        <label for="register-username">Username</label>
+                        <input type="text" class="form-control" id="register-username" name="username" required placeholder="Choose a username">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-name">Full Name</label>
+                        <input type="text" class="form-control" id="register-name" name="full_name" placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">Email Address</label>
+                        <input type="email" class="form-control" id="register-email" name="email" required placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Password</label>
+                        <input type="password" class="form-control" id="register-password" name="password" required placeholder="Create a password (min 6 chars)">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-confirm">Confirm Password</label>
+                        <input type="password" class="form-control" id="register-confirm" name="confirm_password" required placeholder="Confirm your password">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-auth">Register</button>
+                </form>
+                
+                <!-- Toggle Links -->
+                <div class="toggle-link">
+                    <span id="login-toggle">Don't have an account? <a id="show-register">Register here</a></span>
+                    <span id="register-toggle" class="hidden">Already have an account? <a id="show-login">Login here</a></span>
+                </div>
+                
+                <!-- Back to Home -->
+                <div class="toggle-link" style="margin-top: 15px;">
+                    <a href="index.html">← Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is already logged in
+        checkSession();
+        
+        function checkSession() {
+            fetch('auth.php?action=check_session')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.logged_in) {
+                        showLoggedInState(data.user);
+                    } else {
+                        showAuthForms();
+                    }
+                })
+                .catch(() => showAuthForms());
+        }
+        
+        function showLoggedInState(user) {
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('register-form').classList.add('hidden');
+            document.getElementById('logged-in-view').classList.remove('hidden');
+            document.getElementById('user-name').textContent = user.full_name || user.username;
+            document.getElementById('header-subtitle').textContent = 'You are logged in';
+        }
+        
+        function showAuthForms() {
+            document.getElementById('logged-in-view').classList.add('hidden');
+            document.getElementById('login-form').classList.remove('hidden');
+            document.getElementById('header-subtitle').textContent = 'Login to your account';
+        }
+        
+        // Toggle between login and register
+        document.getElementById('show-register').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('register-form').classList.remove('hidden');
+            document.getElementById('login-toggle').classList.add('hidden');
+            document.getElementById('register-toggle').classList.remove('hidden');
+            document.getElementById('header-subtitle').textContent = 'Create your account';
+            hideAlert();
+        });
+        
+        document.getElementById('show-login').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('register-form').classList.add('hidden');
+            document.getElementById('login-form').classList.remove('hidden');
+            document.getElementById('register-toggle').classList.add('hidden');
+            document.getElementById('login-toggle').classList.remove('hidden');
+            document.getElementById('header-subtitle').textContent = 'Login to your account';
+            hideAlert();
+        });
+        
+        // Handle login form submission
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            formData.append('action', 'login');
+            
+            fetch('auth.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('Login successful! Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'exam_paper.html';
+                    }, 1000);
+                } else {
+                    showAlert(data.error, 'danger');
+                }
+            })
+            .catch(err => {
+                showAlert('Login failed. Please try again.', 'danger');
+            });
+        });
+        
+        // Handle register form submission
+        document.getElementById('register-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('register-password').value;
+            const confirm = document.getElementById('register-confirm').value;
+            
+            if (password !== confirm) {
+                showAlert('Passwords do not match', 'danger');
+                return;
+            }
+            
+            const formData = new FormData(this);
+            formData.append('action', 'register');
+            
+            fetch('auth.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('Registration successful! Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'exam_paper.html';
+                    }, 1000);
+                } else {
+                    showAlert(data.error, 'danger');
+                }
+            })
+            .catch(err => {
+                showAlert('Registration failed. Please try again.', 'danger');
+            });
+        });
+        
+        // Handle logout
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            fetch('auth.php?action=logout', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = 'login.html';
+                    }
+                });
+        });
+        
+        // Alert functions
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert-message');
+            alert.className = 'alert alert-' + type;
+            alert.textContent = message;
+            alert.classList.remove('hidden');
+        }
+        
+        function hideAlert() {
+            document.getElementById('alert-message').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Take Exam - DoPaper.com</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        /* Header */
+        .exam-header {
+            background: linear-gradient(135deg, #1a5f2a 0%, #2e8b57 100%);
+            color: white;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: top 0.3s ease;
+        }
+        
+        /* Header when reading banner is visible */
+        .exam-header.reading-mode {
+            top: 65px;
+        }
+        
+        .exam-timer {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .timer-warning {
+            background: #ffc107;
+            color: #333;
+            animation: pulse 1s infinite;
+        }
+        
+        .timer-danger {
+            background: #dc3545;
+            color: white;
+            animation: pulse 0.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .progress-container {
+            background: rgba(255,255,255,0.3);
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-bar-custom {
+            background: #ffd700;
+            height: 100%;
+            transition: width 1s linear;
+        }
+        
+        /* Main Content */
+        .exam-container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 15px;
+            transition: padding-top 0.3s ease;
+        }
+        
+        /* Extra padding when reading banner is visible */
+        .exam-container.reading-mode {
+            padding-top: 80px;
+        }
+        
+        .question-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+        
+        .question-card:hover {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+        
+        .question-number {
+            background: linear-gradient(135deg, #1a5f2a 0%, #2e8b57 100%);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        
+        .question-text {
+            font-size: 1.1rem;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: #f8fff9;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .option-label:hover {
+            border-color: #2e8b57;
+            background: #e8f5e9;
+        }
+        
+        .option-label.selected {
+            border-color: #1a5f2a;
+            background: #e8f5e9;
+        }
+        
+        .option-label input {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            accent-color: #1a5f2a;
+        }
+        
+        .option-text {
+            font-size: 1rem;
+            color: #333;
+        }
+        
+        /* Mark Review */
+        .mark-review {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+        
+        .mark-review span {
+            font-weight: bold;
+            color: #1a5f2a;
+        }
+        
+        /* Results Modal */
+        .results-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 600px;
+            margin: 50px auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .results-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+        
+        .results-score {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #1a5f2a;
+            margin: 20px 0;
+        }
+        
+        .results-label {
+            color: #666;
+            font-size: 1.2rem;
+        }
+        
+        .results-breakdown {
+            background: #f8fff9;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: left;
+        }
+        
+        /* Wrong Questions */
+        .wrong-questions {
+            margin-top: 30px;
+            text-align: left;
+        }
+        
+        .wrong-question-card {
+            background: #fff5f5;
+            border-left: 4px solid #dc3545;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .wrong-question-card h6 {
+            color: #dc3545;
+            margin-bottom: 10px;
+        }
+        
+        .correct-answer {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .user-answer-wrong {
+            color: #dc3545;
+            text-decoration: line-through;
+        }
+        
+        /* Buttons */
+        .btn-submit-exam {
+            background: linear-gradient(135deg, #1a5f2a 0%, #2e8b57 100%);
+            color: white;
+            border: none;
+            padding: 16px 50px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-submit-exam:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(46, 139, 87, 0.4);
+        }
+        
+        .btn-dashboard {
+            background: white;
+            color: #1a5f2a;
+            border: 2px solid #1a5f2a;
+            padding: 14px 40px;
+            border-radius: 30px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+        }
+        
+        .btn-dashboard:hover {
+            background: #1a5f2a;
+            color: white;
+        }
+        
+        /* Navigation */
+        .question-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .nav-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .nav-btn:hover {
+            border-color: #2e8b57;
+        }
+        
+        .nav-btn.answered {
+            background: #1a5f2a;
+            color: white;
+            border-color: #1a5f2a;
+        }
+        
+        .nav-btn.current {
+            border-color: #ffd700;
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
+        }
+        
+        /* Login Required */
+        .login-required {
+            text-align: center;
+            padding: 100px 20px;
+            background: white;
+            border-radius: 20px;
+            margin: 50px auto;
+            max-width: 500px;
+        }
+        
+        /* Reading Time Banner */
+        .reading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(135deg, #1a5f2a 0%, #2e8b57 100%);
+            color: white;
+            padding: 15px 20px;
+            z-index: 9999;
+            display: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .reading-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .reading-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .reading-icon {
+            font-size: 1.5rem;
+        }
+        
+        .reading-text h4 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+        
+        .reading-text p {
+            margin: 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .reading-timer {
+            font-size: 5rem;
+            font-weight: bold;
+            color: #1a5f2a;
+            margin: 30px 0;
+        }
+        
+        .reading-progress {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 30px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+        
+        .reading-progress-bar {
+            background: linear-gradient(135deg, #1a5f2a 0%, #2e8b57 100%);
+            height: 100%;
+            transition: width 1s linear;
+        }
+        
+        /* Disabled options during reading time */
+        .option-disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .option-disabled::after {
+            content: '🔒';
+            position: absolute;
+            right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .question-card.reading-mode {
+            border: 2px dashed #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <!-- Exam Header -->
+    <div class="exam-header" id="exam-header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4>DoPaper.com</h4>
+                    <div id="paper-info" style="opacity: 0.9; font-size: 0.9rem;"></div>
+                </div>
+                <div class="exam-timer" id="timer">
+                    ⏱️ <span id="time-remaining">00:00</span>
+                </div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar-custom" id="progress-bar" style="width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="exam-container" id="exam-container">
+        <!-- Question Navigation -->
+        <div class="question-nav" id="question-nav"></div>
+        
+        <!-- Questions will be loaded here -->
+        <div id="questions-container"></div>
+        
+        <!-- Submit Button -->
+        <div style="text-align: center; margin: 40px 0;">
+            <button class="btn-submit-exam" id="submit-btn" onclick="submitExam()">
+                Submit Exam
+            </button>
+        </div>
+    </div>
+
+    <!-- Results Container -->
+    <div class="exam-container" id="results-container" style="display: none;"></div>
+
+    <!-- Login Required -->
+    <div class="login-required" id="login-required" style="display: none;">
+        <h2>Login Required</h2>
+        <p>Please login to take the exam.</p>
+        <a href="login.html" class="btn-dashboard">Login Now</a>
+    </div>
+
+    <!-- Reading Time Banner -->
+    <div class="reading-overlay" id="reading-overlay" style="display: none;">
+        <div class="reading-content">
+            <div class="reading-info">
+                <span class="reading-icon">📖</span>
+                <div class="reading-text">
+                    <h4>📚 Reading Time - You can read but cannot answer yet!</h4>
+                    <p>Time remaining: <strong id="reading-time-remaining">--</strong> seconds</p>
+                </div>
+            </div>
+            <div class="reading-progress" style="width: 200px; background: rgba(255,255,255,0.3); border-radius: 10px; height: 20px; overflow: hidden;">
+                <div class="reading-progress-bar" id="reading-progress-bar" style="width: 0%; height: 100%; background: #ffd700;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentUser = null;
+        let paperId = null;
+        let questions = [];
+        let answers = {};
+        let timeRemaining = 0;
+        let totalTime = 0;
+        let timerInterval = null;
+        let startTime = null;
+        let readingTimeSeconds = 0; // Will be calculated as 10% of total time
+        let isReadingMode = true;
+        
+        // Get paper_id from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        paperId = urlParams.get('paper_id');
+        
+        // Check authentication and load paper
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+        });
+        
+        function checkAuth() {
+            fetch('auth.php?action=check_session')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.logged_in) {
+                        currentUser = data.user;
+                        if (paperId) {
+                            loadPaper();
+                        } else {
+                            showError('No paper specified');
+                        }
+                    } else {
+                        showLoginRequired();
+                    }
+                })
+                .catch(() => showLoginRequired());
+        }
+        
+        function showLoginRequired() {
+            document.getElementById('exam-header').style.display = 'none';
+            document.getElementById('exam-container').style.display = 'none';
+            document.getElementById('login-required').style.display = 'block';
+        }
+        
+        function showError(message) {
+            document.getElementById('exam-container').innerHTML = `
+                <div class="login-required">
+                    <h2>Error</h2>
+                    <p>${message}</p>
+                    <a href="dashboard.html" class="btn-dashboard">Go to Dashboard</a>
+                </div>
+            `;
+        }
+        
+        function loadPaper() {
+            fetch(`get_papers.php?action=get_paper&paper_id=${paperId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const paper = data.paper;
+                        questions = paper.questions || [];
+                        totalTime = paper.time_duration * 60; // Convert to seconds
+                        timeRemaining = totalTime;
+                        
+                        // Calculate reading time as 10% of total time (minimum 30 seconds)
+                        readingTimeSeconds = Math.max(30, Math.floor(totalTime * 0.1));
+                        
+                        // Show paper info
+                        document.getElementById('paper-info').textContent = 
+                            `${paper.subject} - ${paper.paper_type} (${paper.year})`;
+                        
+                        renderQuestions();
+                        
+                        // Show reading time overlay
+                        startReadingTime();
+                    } else {
+                        showError(data.error || 'Failed to load paper');
+                    }
+                })
+                .catch(() => showError('Error loading paper'));
+        }
+        
+        function startReadingTime() {
+            const overlay = document.getElementById('reading-overlay');
+            const progressBar = document.getElementById('reading-progress-bar');
+            const timeRemainingEl = document.getElementById('reading-time-remaining');
+            const examHeader = document.getElementById('exam-header');
+            const examContainer = document.getElementById('exam-container');
+            
+            // Show overlay as banner (flex with space-between)
+            overlay.style.display = 'flex';
+            
+            // Add class to header and container to push them down
+            examHeader.classList.add('reading-mode');
+            examContainer.classList.add('reading-mode');
+            
+            // Initialize the display with calculated reading time
+            timeRemainingEl.textContent = readingTimeSeconds;
+            
+            // Disable all answer options (but questions are visible)
+            disableAnswerOptions(true);
+            
+            let remaining = readingTimeSeconds;
+            
+            const readingTimer = setInterval(function() {
+                remaining--;
+                
+                // Update display
+                timeRemainingEl.textContent = remaining;
+                
+                // Update progress bar
+                const percentage = ((readingTimeSeconds - remaining) / readingTimeSeconds) * 100;
+                progressBar.style.width = percentage + '%';
+                
+                if (remaining <= 0) {
+                    clearInterval(readingTimer);
+                    
+                    // Hide overlay
+                    overlay.style.display = 'none';
+                    
+                    // Remove classes
+                    examHeader.classList.remove('reading-mode');
+                    examContainer.classList.remove('reading-mode');
+                    
+                    // Enable answer options
+                    disableAnswerOptions(false);
+                    isReadingMode = false;
+                    
+                    // Start the exam timer
+                    startTimer();
+                }
+            }, 1000);
+        }
+        
+        function disableAnswerOptions(disabled) {
+            questions.forEach(q => {
+                const optionA = document.getElementById(`option-a-${q.id}`);
+                const optionB = document.getElementById(`option-b-${q.id}`);
+                const optionC = document.getElementById(`option-c-${q.id}`);
+                const optionD = document.getElementById(`option-d-${q.id}`);
+                const optionE = document.getElementById(`option-e-${q.id}`);
+                
+                // Get the radio inputs inside the labels
+                const inputA = optionA.querySelector('input[type="radio"]');
+                const inputB = optionB.querySelector('input[type="radio"]');
+                const inputC = optionC.querySelector('input[type="radio"]');
+                const inputD = optionD.querySelector('input[type="radio"]');
+                const inputE = optionE ? optionE.querySelector('input[type="radio"]') : null;
+                
+                if (disabled) {
+                    optionA.classList.add('option-disabled');
+                    optionB.classList.add('option-disabled');
+                    optionC.classList.add('option-disabled');
+                    optionD.classList.add('option-disabled');
+                    if (optionE) optionE.classList.add('option-disabled');
+                    
+                    // Disable the radio buttons
+                    inputA.disabled = true;
+                    inputB.disabled = true;
+                    inputC.disabled = true;
+                    inputD.disabled = true;
+                    if (inputE) inputE.disabled = true;
+                    
+                    // Add reading mode border to question card
+                    document.getElementById(`question-${q.id}`).classList.add('reading-mode');
+                } else {
+                    optionA.classList.remove('option-disabled');
+                    optionB.classList.remove('option-disabled');
+                    optionC.classList.remove('option-disabled');
+                    optionD.classList.remove('option-disabled');
+                    if (optionE) optionE.classList.remove('option-disabled');
+                    
+                    // Enable the radio buttons
+                    inputA.disabled = false;
+                    inputB.disabled = false;
+                    inputC.disabled = false;
+                    inputD.disabled = false;
+                    if (inputE) inputE.disabled = false;
+                    
+                    // Remove reading mode border
+                    document.getElementById(`question-${q.id}`).classList.remove('reading-mode');
+                }
+            });
+        }
+        
+        function renderQuestions() {
+            const navContainer = document.getElementById('question-nav');
+            const questionsContainer = document.getElementById('questions-container');
+            
+            // Render navigation
+            navContainer.innerHTML = questions.map((q, index) => `
+                <button class="nav-btn" id="nav-${q.id}" onclick="scrollToQuestion(${q.id})">
+                    ${q.id}
+                </button>
+            `).join('');
+            
+            // Render questions
+            questionsContainer.innerHTML = questions.map((q, index) => `
+                <div class="question-card" id="question-${q.id}">
+                    <div class="question-number">${q.id}</div>
+                    <div class="question-text">${q.question_text || q.text}</div>
+                    <div class="options-container">
+                        <label class="option-label option-disabled" id="option-a-${q.id}">
+                            <input type="radio" name="question_${q.id}" value="A" onchange="selectAnswer(${q.id}, 'A')" disabled>
+                            <span class="option-text">A. ${q.option_a}</span>
+                        </label>
+                        <label class="option-label option-disabled" id="option-b-${q.id}">
+                            <input type="radio" name="question_${q.id}" value="B" onchange="selectAnswer(${q.id}, 'B')" disabled>
+                            <span class="option-text">B. ${q.option_b}</span>
+                        </label>
+                        <label class="option-label option-disabled" id="option-c-${q.id}">
+                            <input type="radio" name="question_${q.id}" value="C" onchange="selectAnswer(${q.id}, 'C')" disabled>
+                            <span class="option-text">C. ${q.option_c}</span>
+                        </label>
+                        <label class="option-label option-disabled" id="option-d-${q.id}">
+                            <input type="radio" name="question_${q.id}" value="D" onchange="selectAnswer(${q.id}, 'D')" disabled>
+                            <span class="option-text">D. ${q.option_d}</span>
+                        </label>
+                        <label class="option-label option-disabled" id="option-e-${q.id}">
+                            <input type="radio" name="question_${q.id}" value="E" onchange="selectAnswer(${q.id}, 'E')" disabled>
+                            <span class="option-text">E. ${q.option_e}</span>
+                        </label>
+                    </div>
+                </div>
+            `).join('');
+            
+            // After rendering, immediately disable all options for reading time
+            disableAnswerOptions(true);
+            
+            // Add reading mode to all question cards
+            questions.forEach(q => {
+                document.getElementById(`question-${q.id}`).classList.add('reading-mode');
+            });
+        }
+        
+        function selectAnswer(questionId, answer) {
+            // Don't allow answering during reading time
+            if (isReadingMode) {
+                return;
+            }
+            
+            answers[questionId] = answer;
+            
+            // Update UI
+            ['a', 'b', 'c', 'd', 'e'].forEach(opt => {
+                const el = document.getElementById(`option-${opt}-${questionId}`);
+                if (el) el.classList.remove('selected');
+            });
+            const selectedEl = document.getElementById(`option-${answer.toLowerCase()}-${questionId}`);
+            if (selectedEl) selectedEl.classList.add('selected');
+            
+            // Update nav
+            updateNavButton(questionId, true);
+        }
+        
+        function updateNavButton(questionId, answered) {
+            const navBtn = document.getElementById(`nav-${questionId}`);
+            if (answered) {
+                navBtn.classList.add('answered');
+            }
+        }
+        
+        function scrollToQuestion(questionId) {
+            // Remove current class from all
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('current'));
+            
+            // Add current class
+            document.getElementById(`nav-${questionId}`).classList.add('current');
+            
+            // Scroll to question
+            document.getElementById(`question-${questionId}`).scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function startTimer() {
+            startTime = Date.now();
+            
+            timerInterval = setInterval(function() {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                timeRemaining = totalTime - elapsed;
+                
+                if (timeRemaining <= 0) {
+                    timeRemaining = 0;
+                    clearInterval(timerInterval);
+                    submitExam();
+                    return;
+                }
+                
+                // Update display
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+                document.getElementById('time-remaining').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Update progress bar
+                const progress = (timeRemaining / totalTime) * 100;
+                document.getElementById('progress-bar').style.width = progress + '%';
+                
+                // Update timer color
+                const timerEl = document.getElementById('timer');
+                timerEl.classList.remove('timer-warning', 'timer-danger');
+                
+                if (timeRemaining <= 60) {
+                    timerEl.classList.add('timer-danger');
+                } else if (timeRemaining <= 300) {
+                    timerEl.classList.add('timer-warning');
+                }
+            }, 1000);
+        }
+        
+        function submitExam() {
+            clearInterval(timerInterval);
+            
+            const timeTaken = Math.floor((Date.now() - startTime) / 1000);
+            const readingTime = Math.floor(totalTime * 0.3); // Assume reading time was 30%
+            
+            const formData = new FormData();
+            formData.append('action', 'submit_answers');
+            formData.append('paper_id', paperId);
+            formData.append('answers', JSON.stringify(answers));
+            formData.append('time_taken', timeTaken);
+            formData.append('reading_time', readingTime);
+            
+            fetch('save_paper.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showResults(data);
+                } else {
+                    alert(data.error || 'Failed to submit answers');
+                }
+            })
+            .catch(() => alert('Error submitting answers'));
+        }
+        
+        function showResults(data) {
+            // Hide exam container
+            document.getElementById('exam-container').style.display = 'none';
+            document.getElementById('exam-header').style.display = 'none';
+            
+            const resultsContainer = document.getElementById('results-container');
+            resultsContainer.style.display = 'block';
+            
+            // Determine emoji and message based on percentage
+            let emoji, message;
+            if (data.percentage >= 80) {
+                emoji = '🏆';
+                message = 'Excellent! Outstanding performance!';
+            } else if (data.percentage >= 60) {
+                emoji = '🎉';
+                message = 'Great job! Keep it up!';
+            } else if (data.percentage >= 40) {
+                emoji = '👍';
+                message = 'Good effort! Practice more to improve.';
+            } else {
+                emoji = '💪';
+                message = 'Keep trying! You can do better!';
+            }
+            
+            // Build wrong questions HTML
+            let wrongQuestionsHtml = '';
+            if (data.wrong_questions && data.wrong_questions.length > 0) {
+                wrongQuestionsHtml = `
+                    <div class="wrong-questions">
+                        <h5 style="color: #dc3545; margin-bottom: 15px;">📝 Questions to Review:</h5>
+                        ${data.wrong_questions.map(wq => `
+                            <div class="wrong-question-card">
+                                <h6>Question ${wq.question_text.substring(0, 50)}...</h6>
+                                <p><span class="user-answer-wrong">Your answer: ${wq.user_answer || 'No answer'}</span></p>
+                                <p class="correct-answer">Correct answer: ${wq.correct_answer}</p>
+                                ${wq.explanation ? `<p style="margin-top: 10px; color: #666;"><strong>Explanation:</strong> ${wq.explanation}</p>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            resultsContainer.innerHTML = `
+                <div class="results-card">
+                    <div class="results-icon">${emoji}</div>
+                    <h2>${message}</h2>
+                    
+                    <div class="results-score">
+                        ${data.obtained_marks}/${data.total_marks}
+                    </div>
+                    <div class="results-label">
+                        Score: ${data.percentage}%
+                    </div>
+                    
+                    <div class="results-breakdown">
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e0e0e0;">
+                            <span>Correct Answers:</span>
+                            <strong style="color: #28a745;">${Object.keys(answers).length - (data.wrong_questions ? data.wrong_questions.length : 0)}</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e0e0e0;">
+                            <span>Wrong Answers:</span>
+                            <strong style="color: #dc3545;">${data.wrong_questions ? data.wrong_questions.length : 0}</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0;">
+                            <span>Unanswered:</span>
+                            <strong>${questions.length - Object.keys(answers).length}</strong>
+                        </div>
+                    </div>
+                    
+                    ${wrongQuestionsHtml}
+                    
+                    <div style="margin-top: 30px;">
+                        <a href="dashboard.html" class="btn-dashboard">Go to Dashboard</a>
+                        <a href="exam_paper.html" class="btn-submit-exam" style="display: inline-block;">Create New Paper</a>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Paper - DoPaper.com</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a5f2a 0%, #2e8b57 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        
+        .navbar {
+            background: rgba(255,255,255,0.95) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            color: #1a5f2a !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .navbar-brand span {
+            color: #2e8b57;
+        }
+        
+        .nav-link {
+            color: #333 !important;
+            font-weight: 500;
+        }
+        
+        .main-container {
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        
+        .scheduler-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .card-header-custom {
+            background: linear-gradient(135deg, #1a5f2a 0%, #2e8b57 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .card-header-custom h2 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        
+        .card-header-custom p {
+            margin: 10px 0 0;
+            opacity: 0.9;
+        }
+        
+        .form-container {
+            padding: 30px;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .form-control {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 12px 15px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: #2e8b57;
+            box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.1);
+        }
+        
+        .btn-schedule-custom {
+            background: linear-gradient(135deg, #1a5f2a 0%, #2e8b57 100%);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .btn-schedule-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(46, 139, 87, 0.4);
+        }
+        
+        .btn-schedule-custom:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .user-badge {
+            background: #1a5f2a;
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: white;
+            font-weight: 500;
+        }
+        
+        .alert {
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .paper-details {
+            background: #f8fff9;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .detail-value {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .calendar-icon {
+            text-align: center;
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #1a5f2a;
+        }
+        
+        .success-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 50px;
+            text-align: center;
+            display: none;
+        }
+        
+        .success-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+        
+        .btn-dashboard {
+            background: linear-gradient(135deg, #1a5f2a 0%, #2e8b57 100%);
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 30px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+        }
+        
+        .btn-dashboard:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(46, 139, 87, 0.4);
+            color: white;
+        }
+        
+        .login-required {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 20px;
+        }
+        
+        .login-required h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .login-required p {
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .login-required .btn-primary-custom {
+            background: linear-gradient(135deg, #1a5f2a 0%, #2e8b57 100%);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Do<span>Paper</span>.com</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="exam_paper.html">Create Paper</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="dashboard.html">Dashboard</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <div id="user-badge" class="user-badge me-3" style="display: none;">
+                        <span id="user-name">User</span>
+                    </div>
+                    <a href="login.html" id="auth-link" class="btn btn-success btn-sm">Login</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <!-- Login Required -->
+        <div id="login-required" class="login-required" style="display: none;">
+            <h2>Login Required</h2>
+            <p>Please login to schedule your exam papers.</p>
+            <a href="login.html" class="btn-primary-custom">Login Now</a>
+        </div>
+
+        <!-- Scheduler Form -->
+        <div class="scheduler-card" id="scheduler-card">
+            <div class="card-header-custom">
+                <h2>📅 Schedule Your Paper</h2>
+                <p>Choose when you want to take this exam paper</p>
+            </div>
+            
+            <div class="form-container">
+                <!-- Paper Details -->
+                <div class="paper-details" id="paper-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Subject:</span>
+                        <span class="detail-value" id="detail-subject">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Paper Type:</span>
+                        <span class="detail-value" id="detail-type">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Year:</span>
+                        <span class="detail-value" id="detail-year">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Questions:</span>
+                        <span class="detail-value" id="detail-questions">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Time:</span>
+                        <span class="detail-value" id="detail-time">-</span>
+                    </div>
+                </div>
+                
+                <div class="calendar-icon">📆</div>
+                
+                <!-- Schedule Form -->
+                <form id="schedule-form">
+                    <div class="mb-4">
+                        <label for="scheduled-date" class="form-label">Select Date <span style="color: red;">*</span></label>
+                        <input type="date" class="form-control" id="scheduled-date" name="scheduled_date" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="scheduled-time" class="form-label">Select Time <span style="color: red;">*</span></label>
+                        <input type="time" class="form-control" id="scheduled-time" name="scheduled_time" required>
+                    </div>
+                    
+                    <button type="submit" class="btn-schedule-custom" id="submit-btn">
+                        Schedule Paper
+                    </button>
+                </form>
+                
+                <!-- Alert -->
+                <div id="alert-message" class="alert mt-3" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- Success Card -->
+        <div class="success-card" id="success-card">
+            <div class="success-icon">🎉</div>
+            <h2 style="color: #1a5f2a; margin-bottom: 15px;">Paper Scheduled!</h2>
+            <p style="color: #666; margin-bottom: 20px;">Your paper has been scheduled for:</p>
+            <div style="background: #f8fff9; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
+                <div style="font-size: 1.5rem; font-weight: bold; color: #1a5f2a;" id="scheduled-datetime"></div>
+            </div>
+            <p style="color: #666; margin-bottom: 30px;">You will be able to take this paper on the scheduled date. Don't forget to check your dashboard!</p>
+            <a href="dashboard.html" class="btn-dashboard">Go to Dashboard</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentUser = null;
+        let paperId = null;
+        
+        // Get paper_id from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        paperId = urlParams.get('paper_id');
+        
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('scheduled-date').setAttribute('min', today);
+        
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            setupEventListeners();
+        });
+        
+        function checkAuth() {
+            fetch('auth.php?action=check_session')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.logged_in) {
+                        currentUser = data.user;
+                        showAuthenticatedUI(data.user);
+                        if (paperId) {
+                            loadPaperDetails();
+                        }
+                    } else {
+                        showLoginRequired();
+                    }
+                })
+                .catch(() => showLoginRequired());
+        }
+        
+        function showAuthenticatedUI(user) {
+            document.getElementById('login-required').style.display = 'none';
+            document.getElementById('scheduler-card').style.display = 'block';
+            
+            // Update navbar
+            document.getElementById('user-badge').style.display = 'block';
+            document.getElementById('user-name').textContent = user.full_name || user.username;
+            document.getElementById('auth-link').textContent = 'Logout';
+            document.getElementById('auth-link').href = '#';
+            document.getElementById('auth-link').classList.remove('btn-success');
+            document.getElementById('auth-link').classList.add('btn-outline-danger');
+            document.getElementById('auth-link').onclick = logout;
+        }
+        
+        function showLoginRequired() {
+            document.getElementById('login-required').style.display = 'block';
+            document.getElementById('scheduler-card').style.display = 'none';
+        }
+        
+        function logout() {
+            fetch('auth.php?action=logout', { method: 'POST' })
+                .then(() => window.location.href = 'login.html');
+        }
+        
+        function loadPaperDetails() {
+            fetch(`get_papers.php?action=get_paper&paper_id=${paperId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const paper = data.paper;
+                        document.getElementById('detail-subject').textContent = paper.subject;
+                        document.getElementById('detail-type').textContent = paper.paper_type;
+                        document.getElementById('detail-year').textContent = paper.year;
+                        document.getElementById('detail-questions').textContent = paper.num_questions;
+                        document.getElementById('detail-time').textContent = paper.time_duration + ' minutes';
+                    } else {
+                        showAlert(data.error || 'Failed to load paper details', 'danger');
+                    }
+                })
+                .catch(() => showAlert('Error loading paper details', 'danger'));
+        }
+        
+        function setupEventListeners() {
+            document.getElementById('schedule-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                schedulePaper();
+            });
+        }
+        
+        function schedulePaper() {
+            const scheduledDate = document.getElementById('scheduled-date').value;
+            const scheduledTime = document.getElementById('scheduled-time').value;
+            
+            if (!scheduledDate || !scheduledTime) {
+                showAlert('Please select both date and time', 'warning');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('action', 'save_schedule');
+            formData.append('paper_id', paperId);
+            formData.append('scheduled_date', scheduledDate);
+            formData.append('scheduled_time', scheduledTime);
+            
+            fetch('save_paper.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showSuccess(data);
+                } else {
+                    showAlert(data.error || 'Failed to schedule paper', 'danger');
+                }
+            })
+            .catch(() => showAlert('Error scheduling paper', 'danger'));
+        }
+        
+        function showSuccess(data) {
+            // Format datetime
+            const date = new Date(data.scheduled_date + 'T' + data.scheduled_time);
+            const formattedDate = date.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            const formattedTime = date.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            document.getElementById('scheduled-datetime').textContent = 
+                `${formattedDate} at ${formattedTime}`;
+            
+            document.getElementById('scheduler-card').style.display = 'none';
+            document.getElementById('success-card').style.display = 'block';
+        }
+        
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert-message');
+            alert.className = 'alert alert-' + type;
+            alert.textContent = message;
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
