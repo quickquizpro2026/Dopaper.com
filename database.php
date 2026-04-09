@@ -5,9 +5,9 @@
  */
 
 // MySQL Database Configuration
-define('DB_HOST', 'mysql-jc9.railway.internal');
+define('DB_HOST', 'mysql.railway.internal');
 define('DB_USER', 'root');
-define('DB_PASS', 'HpUQhmarfnqPNOsPlrEVAzerIvJLmaGb');
+define('DB_PASS', 'kyEoOvpMweNgQIcfPyxjcFhZodyWNCoe');
 define('DB_NAME', 'railway');
 
 /**
